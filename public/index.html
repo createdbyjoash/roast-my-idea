@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Roast My Idea 🔥</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #0D0D0D; --surface: #161616; --surface2: #1E1E1E;
+  --border: #2A2A2A; --text: #F5F5F5; --text2: #888; --text3: #444;
+  --fire: #FF4500; --fire2: #FF8C00; --fire3: #FFD700;
+  --green: #00E676; --red: #FF1744;
+}
+html, body { min-height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body::before { content: ''; position: fixed; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(255,69,0,0.06) 0%, transparent 70%); top: -200px; left: 50%; transform: translateX(-50%); pointer-events: none; z-index: 0; }
+.container { max-width: 620px; margin: 0 auto; padding: 40px 20px 80px; position: relative; z-index: 1; }
+
+/* HERO */
+.hero { text-align: center; margin-bottom: 40px; }
+.hero-emoji { font-size: 56px; display: block; margin-bottom: 16px; animation: flicker 2s ease-in-out infinite; }
+@keyframes flicker { 0%, 100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.08) rotate(2deg); } }
+.hero-title { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 12px; background: linear-gradient(135deg, #FF4500, #FF8C00, #FFD700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 15px; color: var(--text2); font-weight: 400; line-height: 1.6; max-width: 380px; margin: 0 auto; }
+
+/* INPUT CARD */
+.input-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 16px; }
+.input-label { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; }
+.idea-input { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; font-size: 16px; font-family: 'DM Sans', sans-serif; font-weight: 400; color: var(--text); outline: none; resize: none; height: 110px; line-height: 1.6; transition: border-color 0.2s; }
+.idea-input:focus { border-color: var(--fire); }
+.idea-input::placeholder { color: var(--text3); }
+
+/* CATEGORY */
+.category-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.cat-btn { padding: 8px 14px; border-radius: 11px; border: 1.5px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.18s; }
+.cat-btn:hover { border-color: var(--fire); color: var(--text); }
+.cat-btn.active { background: var(--fire); border-color: var(--fire); color: #fff; }
+
+/* INTENSITY */
+.intensity-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.intensity-btn { flex: 1; padding: 10px 8px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.18s; text-align: center; }
+.intensity-btn:hover { border-color: var(--fire); color: var(--text); }
+.intensity-btn.active { background: var(--fire); border-color: var(--fire); color: #fff; }
+
+/* ROAST BUTTON */
+.roast-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #FF4500, #FF8C00); color: #fff; border: none; border-radius: 16px; font-size: 18px; font-weight: 700; font-family: 'Syne', sans-serif; cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s; box-shadow: 0 8px 32px rgba(255,69,0,0.35); position: relative; overflow: hidden; }
+.roast-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, #FF8C00, #FFD700); opacity: 0; transition: opacity 0.2s; }
+.roast-btn:hover::before { opacity: 1; }
+.roast-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,69,0,0.45); }
+.roast-btn:active { transform: scale(0.98); }
+.roast-btn span { position: relative; z-index: 1; }
+
+/* LOADING */
+.loading-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px 24px; text-align: center; display: none; margin-bottom: 16px; }
+.loading-flames { font-size: 36px; display: block; margin-bottom: 16px; animation: bounce 0.6s ease-in-out infinite alternate; }
+@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+.loading-text { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text2); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* RESULT CARD */
+.result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 16px; display: none; animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1); }
+@keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.result-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.result-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #FF4500, #FF8C00); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.result-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+.result-role { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.verdict-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; font-family: 'Syne', sans-serif; letter-spacing: 0.5px; margin-bottom: 16px; }
+.verdict-badge.dead { background: rgba(255,23,68,0.15); color: var(--red); border: 1px solid rgba(255,23,68,0.3); }
+.verdict-badge.maybe { background: rgba(255,140,0,0.15); color: var(--fire2); border: 1px solid rgba(255,140,0,0.3); }
+.verdict-badge.fire { background: rgba(0,230,118,0.12); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+.roast-text { font-size: 16px; line-height: 1.75; color: var(--text); font-weight: 400; margin-bottom: 20px; }
+.score-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.score-box { background: var(--surface2); border-radius: 14px; padding: 14px 10px; text-align: center; border: 1px solid var(--border); }
+.score-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.score-lbl { font-size: 10px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.action-row { display: flex; gap: 10px; }
+.btn-share { flex: 1; padding: 13px; background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 13px; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.18s; }
+.btn-share:hover { border-color: var(--fire); color: var(--fire); }
+.btn-again { flex: 1; padding: 13px; background: linear-gradient(135deg, #FF4500, #FF8C00); color: #fff; border: none; border-radius: 13px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.18s; box-shadow: 0 4px 16px rgba(255,69,0,0.3); }
+.btn-again:hover { transform: translateY(-1px); }
+
+/* FOOTER */
+.footer { text-align: center; margin-top: 32px; font-size: 12px; color: var(--text3); }
+.footer span { color: var(--fire); font-weight: 600; cursor: pointer; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <span class="hero-emoji">🔥</span>
+    <div class="hero-title">Roast My Idea</div>
+    <div class="hero-sub">Paste your startup idea and get brutally honest feedback from a no nonsense investor. No sugarcoating. No feelings. Just facts.</div>
+  </div>
+
+  <div class="input-card">
+    <label class="input-label">Your Idea</label>
+    <textarea class="idea-input" id="ideaInput" placeholder="e.g. An app that matches dog owners with dog walkers in their neighborhood using AI..."></textarea>
+
+    <div style="margin-top:16px;margin-bottom:4px">
+      <label class="input-label">Category</label>
+      <div class="category-grid">
+        <button class="cat-btn active" onclick="setCategory(this,'general')">🌐 General</button>
+        <button class="cat-btn" onclick="setCategory(this,'marketplace')">🛍️ Marketplace</button>
+        <button class="cat-btn" onclick="setCategory(this,'saas')">💼 SaaS</button>
+        <button class="cat-btn" onclick="setCategory(this,'social')">🤝 Social</button>
+        <button class="cat-btn" onclick="setCategory(this,'fintech')">💰 Fintech</button>
+        <button class="cat-btn" onclick="setCategory(this,'health')">🏋️ Health</button>
+        <button class="cat-btn" onclick="setCategory(this,'edtech')">🎓 EdTech</button>
+        <button class="cat-btn" onclick="setCategory(this,'ai')">🤖 AI App</button>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;margin-bottom:16px">
+      <label class="input-label">Roast Intensity</label>
+      <div class="intensity-row">
+        <button class="intensity-btn" onclick="setIntensity(this,'mild')">😊 Mild</button>
+        <button class="intensity-btn active" onclick="setIntensity(this,'medium')">😤 Medium</button>
+        <button class="intensity-btn" onclick="setIntensity(this,'brutal')">💀 Brutal</button>
+      </div>
+    </div>
+
+    <button class="roast-btn" onclick="roastIdea()"><span>🔥 Roast My Idea</span></button>
+  </div>
+
+  <div class="loading-card" id="loadingCard">
+    <span class="loading-flames">🔥</span>
+    <div class="loading-text" id="loadingText">Sharpening the knives...</div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div class="result-avatar">🧠</div>
+      <div>
+        <div class="result-name">The Brutally Honest Investor</div>
+        <div class="result-role">$500M+ deployed · Zero patience for bad ideas</div>
+      </div>
+    </div>
+    <div class="verdict-badge" id="verdictBadge"></div>
+    <div class="roast-text" id="roastText"></div>
+    <div class="score-row">
+      <div class="score-box"><div class="score-val" id="scoreMarket">?</div><div class="score-lbl">Market</div></div>
+      <div class="score-box"><div class="score-val" id="scoreIdea">?</div><div class="score-lbl">Originality</div></div>
+      <div class="score-box"><div class="score-val" id="scoreViability">?</div><div class="score-lbl">Viability</div></div>
+    </div>
+    <div class="action-row">
+      <button class="btn-share" onclick="copyRoast()">📋 Copy Roast</button>
+      <button class="btn-again" onclick="roastAgain()">🔥 Roast Again</button>
+    </div>
+  </div>
+
+  <div class="footer">Built by <span onclick="window.open('https://calendly.com/joash01/mvp-deep-dive','_blank')">Joash</span> · No Code MVP Builder</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let intensity = 'medium';
+let category = 'general';
+let lastRoast = '';
+
+const loadingMessages = [
+  'Sharpening the knives...',
+  'Checking if this already exists...',
+  'Consulting with 47 failed founders...',
+  'Calculating how broke you will be...',
+  'Reading between the lines of your pitch...',
+  'Pulling up your competitors funding rounds...',
+  'Asking the market if it cares...',
+];
+
+// ROAST DATABASE
+const roasts = {
+  general: {
+    mild: [
+      { verdict: 'NEEDS WORK', roast: "There is a kernel of something interesting here but the execution path is unclear. You are solving a real problem but so are about 200 other startups right now. What makes you different? Before you write a single line of code, talk to 20 potential users and come back with a clearer answer.", market: 5, originality: 4, viability: 5 },
+      { verdict: 'NEEDS WORK', roast: "I can see the vision but vision without validation is just daydreaming. The market exists but you have not told me why you are the right person to build this or why now is the right time. Timing is everything in startups and I am not convinced this is the moment.", market: 6, originality: 5, viability: 4 },
+      { verdict: 'ACTUALLY FIRE', roast: "Okay I will give you this one. The problem is real, the timing feels right, and the approach is not completely obvious. You are not reinventing the wheel — you are putting better spokes on it. Do not overbuild. Ship a scrappy version in 4 weeks and see if anyone cares.", market: 7, originality: 6, viability: 7 },
+    ],
+    medium: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "I have seen this pitch 40 times this quarter. You are essentially Uber but for something nobody asked for. The TAM you are imagining exists only in your Notion doc. Your first 100 users will be your friends and family and after that you will hit a wall so hard you will feel it in your teeth.", market: 3, originality: 2, viability: 3 },
+      { verdict: 'NEEDS WORK', roast: "The idea is not terrible but you are coming at it from the wrong angle. You are building a solution looking for a problem instead of the other way around. Go find 10 people who would pay for this today, not eventually, not maybe — today. If you cannot, go back to the drawing board.", market: 5, originality: 4, viability: 4 },
+      { verdict: 'ACTUALLY FIRE', roast: "Fine. I like it. The market is underserved, the problem is painful enough that people will actually pay to solve it, and your approach has a defensible angle. Do not get cocky though. You are one pivot away from losing everything that makes this interesting. Stay focused.", market: 8, originality: 7, viability: 7 },
+    ],
+    brutal: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "Congratulations, you have invented something that already exists, costs more to build than it will ever earn, and targets a market that does not actually have money. I have funded startups that failed for less obvious reasons than this. Delete the Figma file and go find a real problem.", market: 2, originality: 1, viability: 2 },
+      { verdict: 'DEAD ON ARRIVAL', roast: "I want you to Google your idea right now. I will wait. See those 12 results? Those are companies that raised millions, had smarter teams than you, and still could not make it work. What exactly is your unfair advantage? If you said passion I am closing this tab.", market: 3, originality: 2, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "You are not wrong that the problem exists. You are just completely wrong about your ability to solve it at this stage with this approach. The graveyard of startups is full of people who had the right idea at the wrong time with the wrong team. Which one are you?", market: 5, originality: 4, viability: 3 },
+    ]
+  },
+  marketplace: {
+    mild: [
+      { verdict: 'NEEDS WORK', roast: "Marketplaces are brutally hard. You have a chicken and egg problem from day one — no buyers without sellers, no sellers without buyers. Tell me exactly how you solve that cold start problem and I will start listening. Until then this is just a good looking Figma prototype.", market: 5, originality: 4, viability: 4 },
+      { verdict: 'ACTUALLY FIRE', roast: "The niche is specific enough that you can actually win it. Most marketplace failures try to boil the ocean. You are focused. Supply side acquisition is still your biggest challenge — map out exactly how you get your first 50 sellers and this becomes fundable.", market: 7, originality: 6, viability: 6 },
+    ],
+    medium: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "Another marketplace. Do you know how many marketplace startups die every year? The ones that survive own a very specific supply or have a distribution moat you do not have. Your take rate is too low to build a business and too high for sellers to stick around. Pick a lane.", market: 3, originality: 3, viability: 3 },
+      { verdict: 'NEEDS WORK', roast: "The demand side is clear. The supply side is your graveyard. You have not explained how you acquire and retain sellers at a unit economics level that makes this business work. Marketplaces live and die on take rate and retention. Show me those numbers or go home.", market: 5, originality: 5, viability: 4 },
+    ],
+    brutal: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "You built a marketplace without solving the supply problem. That is like building a restaurant with no kitchen. Craigslist, Facebook Marketplace, and every vertical marketplace with $50M in funding are already eating this space. Your differentiator is vibes and that is not a moat.", market: 2, originality: 2, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "Marketplaces require network effects to win and network effects require scale to kick in. You are bootstrapped, solo, and have no distribution advantage. The math does not work. Come back when you have 100 active sellers and I will take a second look.", market: 4, originality: 3, viability: 3 },
+    ]
+  },
+  saas: {
+    mild: [
+      { verdict: 'NEEDS WORK', roast: "The SaaS model is right but the differentiation is thin. Enterprise software buyers are not looking for slightly better — they are looking for ten times better or something entirely new. Where exactly do you win against the incumbent? That answer needs to be sharper.", market: 6, originality: 4, viability: 5 },
+      { verdict: 'ACTUALLY FIRE', roast: "Solid. The workflow problem is real, the willingness to pay is there, and you are going after a segment that is underserved by the big players. Keep the feature set ruthlessly minimal for the MVP. The worst thing you can do is build everything and ship nothing.", market: 7, originality: 6, viability: 7 },
+    ],
+    medium: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "You are building a feature, not a company. Every problem you are solving is either a native feature in an existing tool or something a smart intern could build with Zapier and a Google Sheet. The only SaaS that wins today either goes deeply vertical or has AI at its core. Which one are you?", market: 3, originality: 3, viability: 3 },
+      { verdict: 'NEEDS WORK', roast: "SaaS churn will eat you alive if you do not solve a mission critical pain point. Vitamin versus painkiller — you need to be a painkiller. Right now this feels like a nice to have and nice to haves die when budgets get cut. Make it mission critical or change the positioning.", market: 5, originality: 5, viability: 4 },
+    ],
+    brutal: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "Salesforce, HubSpot, and 4,000 vertical SaaS tools with venture backing already own every inch of this space. Your pricing is too low to sustain a real business and too high for SMBs who will just use a spreadsheet. I wish you luck but I am not writing you a check.", market: 2, originality: 2, viability: 3 },
+      { verdict: 'NEEDS WORK', roast: "The integration tax alone will kill you. Every enterprise buyer will ask you to integrate with their existing stack before signing. You have no partnerships, no API ecosystem, and no enterprise sales motion. You are not building a SaaS, you are building a demo.", market: 4, originality: 4, viability: 3 },
+    ]
+  },
+  social: {
+    mild: [
+      { verdict: 'NEEDS WORK', roast: "Social networks are the hardest things to build because they require critical mass to deliver value. What is your wedge? How do you get your first thousand users who are engaged enough to invite the next thousand? That flywheel needs to be crystal clear before you build anything.", market: 5, originality: 5, viability: 4 },
+      { verdict: 'ACTUALLY FIRE', roast: "The niche community angle is smart. Broad social networks are dead but tight vertical communities are thriving. You are going after a group with a strong identity and real engagement potential. Just make sure the monetization model does not kill the community vibe you are building.", market: 7, originality: 7, viability: 6 },
+    ],
+    medium: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "You are building a social network in 2025. Instagram, TikTok, X, LinkedIn, and BeReal are all fighting for the same attention and losing. What makes you think your network will get off the ground when billion dollar companies with a billion users cannot hold attention anymore?", market: 2, originality: 3, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "Content moderation alone will consume your entire founding team. Social platforms are regulatory nightmares, trust and safety sinkholes, and attention war zones. Unless you have a very specific community with a very specific pain point, this is a passion project not a business.", market: 4, originality: 4, viability: 3 },
+    ],
+    brutal: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "Every social network that has launched in the last 5 years has either pivoted or died quietly. Yours has nothing that Meta, TikTok, or Bereal do not already do better with more data, more money, and more engineers than you will ever have. Hard pass.", market: 1, originality: 2, viability: 1 },
+      { verdict: 'NEEDS WORK', roast: "You have no distribution, no content moat, no creator incentive, and no answer to the cold start problem. Social apps need a miracle to get traction without a celebrity or viral moment. Do you have either of those? Thought so.", market: 3, originality: 3, viability: 2 },
+    ]
+  },
+  fintech: {
+    mild: [
+      { verdict: 'NEEDS WORK', roast: "Fintech is one of the most regulated spaces you can enter and you have glossed over the compliance question entirely. Banking licenses, AML, KYC — these are not afterthoughts, they are your entire go to market strategy. Get a fintech lawyer involved before you write a single line of code.", market: 6, originality: 5, viability: 4 },
+      { verdict: 'ACTUALLY FIRE', roast: "The financial pain point is real and the incumbent solutions are genuinely terrible. You have a shot here if you can navigate the regulatory layer without burning all your runway. Start in one market, get it right, then expand. Do not try to be global on day one.", market: 7, originality: 6, viability: 6 },
+    ],
+    medium: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "You are trying to compete with banks, neobanks, and fintech unicorns that have spent a decade and hundreds of millions figuring out what you are casually pitching. The regulatory moat alone should terrify you. Who on your team has ever built a compliant financial product?", market: 3, originality: 3, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "Financial products live and die on trust and trust takes years to build. You have not addressed how you acquire users who will actually give you access to their money, how you handle fraud, or how you survive a regulatory audit. Those are not small details, they are your entire business.", market: 5, originality: 4, viability: 3 },
+    ],
+    brutal: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "Revolut, Paystack, Flutterwave, and every neo bank in your region have already spent billions acquiring the users you are targeting. Your unit economics will never make sense at the scale you need to survive. This is a masterclass in how not to enter fintech.", market: 2, originality: 2, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "You want to touch people's money without a compliance team, a legal budget, or a banking partner. That is not a startup, that is a regulatory liability waiting to happen. Come back when you have a licensed partner and I will reconsider.", market: 4, originality: 3, viability: 2 },
+    ]
+  },
+  health: {
+    mild: [
+      { verdict: 'NEEDS WORK', roast: "Health apps have the highest download to delete ratio of any category. People download them in January and forget them by February. Your retention strategy needs to be airtight. What is the mechanism that keeps users coming back after the motivation of signing up wears off?", market: 6, originality: 5, viability: 5 },
+      { verdict: 'ACTUALLY FIRE', roast: "You are solving a problem people genuinely care about and the habit forming potential is there. The B2B angle through employers or insurance companies is actually smarter than going direct to consumer. That is where the real money and distribution in health tech lives.", market: 7, originality: 6, viability: 7 },
+    ],
+    medium: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "The App Store has 50,000 health and fitness apps. Yours does not have a single differentiator that would make someone choose it over MyFitnessPal, Whoop, or Apple Health which is baked into every iPhone. What exactly are you building that does not already exist and work better?", market: 3, originality: 2, viability: 3 },
+      { verdict: 'NEEDS WORK', roast: "Health behaviour change is one of the hardest problems in product design. Peloton spent billions on it and still could not sustain retention. Your gamification layer is thin and your accountability mechanism is non existent. Come back with a clinical outcome that proves your product works.", market: 5, originality: 4, viability: 4 },
+    ],
+    brutal: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "Another fitness tracker. Brilliant. Because what the world was really missing was a slightly worse version of Fitbit built by someone with no medical background, no clinical validation, and no distribution deal with a gym chain. Delete this and go outside.", market: 2, originality: 1, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "Healthcare is where startups go to die slowly and expensively. You have no clinical evidence, no HIPAA plan, no insurance reimbursement path, and no B2B sales motion. Consumer health apps that are not backed by a medical institution fail at an astronomical rate. You have been warned.", market: 4, originality: 3, viability: 2 },
+    ]
+  },
+  edtech: {
+    mild: [
+      { verdict: 'NEEDS WORK', roast: "EdTech has a completion rate problem. Coursera, Udemy, and Khan Academy have free content and still cannot get users to finish anything. What is your engagement mechanism? How do you keep learners coming back when motivation drops after week two?", market: 6, originality: 5, viability: 5 },
+      { verdict: 'ACTUALLY FIRE', roast: "The B2B angle is the right call. Selling to enterprises and schools for upskilling is a much cleaner business than trying to convince individuals to pay for self improvement. The sales cycle is long but the contract values are worth it. Build a killer demo and start knocking on doors.", market: 7, originality: 6, viability: 7 },
+    ],
+    medium: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "YouTube is free. ChatGPT tutors better than most teachers. Coursera has millions of courses. And you want to charge people to learn something they could figure out themselves in an afternoon. What exactly is your unfair advantage in the most commoditised content market in history?", market: 3, originality: 3, viability: 3 },
+      { verdict: 'NEEDS WORK', roast: "EdTech graveyard is massive. Great Hill Partners, SoftBank, and Tiger Global all lost billions betting on this space. The problem is not the content, it is the behaviour change. Learning is hard and your product does nothing new to make it easier. Try again.", market: 5, originality: 4, viability: 4 },
+    ],
+    brutal: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "You are building a learning platform when GPT 4 already tutors better than 90 percent of human teachers, for free, at any time, in any language. The EdTech model you are describing was disrupted before you even started building it. This is not a startup, it is a history lesson.", market: 2, originality: 1, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "Completion rates on your platform will be under 5 percent. That is not a guess, that is the industry average. And you have not told me a single thing that would make your completion rate different. Engagement is not a feature you can bolt on after launch.", market: 4, originality: 3, viability: 3 },
+    ]
+  },
+  ai: {
+    mild: [
+      { verdict: 'NEEDS WORK', roast: "Every pitch I hear right now has the word AI in it. That used to be a differentiator and now it is table stakes. Tell me specifically which model you are using, what proprietary data you are training on, and how you are not just a GPT wrapper with a pretty UI.", market: 6, originality: 4, viability: 5 },
+      { verdict: 'ACTUALLY FIRE', roast: "The workflow automation angle is genuinely underexplored in this vertical and AI makes it 10 times more feasible now than it was two years ago. The risk is that OpenAI or Anthropic ships a native feature that kills your use case overnight. Make sure your moat is the data, not the model.", market: 7, originality: 7, viability: 6 },
+    ],
+    medium: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "You have wrapped GPT in a UI and called it a product. OpenAI will ship this as a native feature within 6 months. You have no proprietary data, no model differentiation, and no switching cost for users. This is a demo, not a company. I have seen 200 of these this year.", market: 2, originality: 2, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "The AI angle is interesting but you have not told me what happens when the underlying model gets 10 times cheaper or when your API provider changes pricing. Your entire business depends on someone else's infrastructure. That is not a moat, that is a dependency.", market: 5, originality: 5, viability: 4 },
+    ],
+    brutal: [
+      { verdict: 'DEAD ON ARRIVAL', roast: "Another AI wrapper startup. You are renting intelligence from OpenAI, reselling it with a 40 percent margin, and calling that a business. The moment OpenAI ships a custom GPT that does exactly what you do — which they will — your entire company evaporates overnight. Next.", market: 1, originality: 1, viability: 2 },
+      { verdict: 'NEEDS WORK', roast: "Your AI feature is not actually AI, it is an API call dressed up in a trench coat. Real AI moats come from proprietary data, fine tuned models, or deeply embedded workflows. You have none of those. You have vibes and a ChatGPT subscription.", market: 3, originality: 2, viability: 3 },
+    ]
+  }
+};
+
+function setCategory(el, val) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  category = val;
+}
+
+function setIntensity(el, val) {
+  document.querySelectorAll('.intensity-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  intensity = val;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function cycleLoadingText() {
+  let i = 0;
+  return setInterval(() => {
+    document.getElementById('loadingText').textContent = loadingMessages[i % loadingMessages.length];
+    i++;
+  }, 1200);
+}
+
+async function roastIdea() {
+  const idea = document.getElementById('ideaInput').value.trim();
+  if (!idea) { showToast('Type your idea first!'); return; }
+
+  document.getElementById('resultCard').style.display = 'none';
+  document.getElementById('loadingCard').style.display = 'block';
+
+  const interval = cycleLoadingText();
+
+  try {
+    const response = await fetch('/api/roast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idea, category, intensity })
+    });
+
+    const data = await response.json();
+    clearInterval(interval);
+    document.getElementById('loadingCard').style.display = 'none';
+
+    if (data.error) {
+      showToast('Something went wrong. Try again!');
+      return;
+    }
+
+    // Map Gemini response fields to expected format
+    const result = {
+      verdict: data.verdict,
+      roast: data.roast,
+      market: data.marketScore,
+      originality: data.originalityScore,
+      viability: data.viabilityScore
+    };
+
+    showResult(result);
+  } catch (error) {
+    clearInterval(interval);
+    document.getElementById('loadingCard').style.display = 'none';
+    showToast('Something went wrong. Try again!');
+  }
+}
+
+function showResult(data) {
+  const badge = document.getElementById('verdictBadge');
+  if (data.verdict.includes('DEAD')) {
+    badge.textContent = '💀 ' + data.verdict;
+    badge.className = 'verdict-badge dead';
+  } else if (data.verdict.includes('FIRE')) {
+    badge.textContent = '🔥 ' + data.verdict;
+    badge.className = 'verdict-badge fire';
+  } else {
+    badge.textContent = '🤔 ' + data.verdict;
+    badge.className = 'verdict-badge maybe';
+  }
+
+  lastRoast = data.roast;
+  const roastEl = document.getElementById('roastText');
+  roastEl.textContent = '';
+  let i = 0;
+  const typewriter = setInterval(() => {
+    roastEl.textContent += data.roast[i];
+    i++;
+    if (i >= data.roast.length) clearInterval(typewriter);
+  }, 16);
+
+  const scoreColor = s => s >= 7 ? '#00E676' : s >= 4 ? '#FF8C00' : '#FF1744';
+  document.getElementById('scoreMarket').textContent = data.market + '/10';
+  document.getElementById('scoreMarket').style.color = scoreColor(data.market);
+  document.getElementById('scoreIdea').textContent = data.originality + '/10';
+  document.getElementById('scoreIdea').style.color = scoreColor(data.originality);
+  document.getElementById('scoreViability').textContent = data.viability + '/10';
+  document.getElementById('scoreViability').style.color = scoreColor(data.viability);
+
+  document.getElementById('resultCard').style.display = 'block';
+  document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyRoast() {
+  const idea = document.getElementById('ideaInput').value.trim();
+  const text = `I got my startup idea roasted 🔥\n\nIdea: "${idea}"\n\nThe verdict: ${lastRoast}\n\nGet your idea roasted free at roastmyidea.vercel.app`;
+  navigator.clipboard.writeText(text).then(() => showToast('Roast copied! 🔥'));
+}
+
+function roastAgain() {
+  document.getElementById('resultCard').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => document.getElementById('ideaInput').focus(), 400);
+}
+</script>
+</body>
+</html>
